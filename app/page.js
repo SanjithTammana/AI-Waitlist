@@ -1,95 +1,118 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+// app/page.js
+'use client';
 
-export default function Home() {
-  return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+import React, { useState } from 'react';
+import { Box, Typography, Button, TextField, Container, Grid, Card, CardContent } from '@mui/material';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from './firebase';
+import styles from './page.module.css';
+import SearchIcon from '@mui/icons-material/Search';
+import ChatIcon from '@mui/icons-material/Chat';
+import DescriptionIcon from '@mui/icons-material/Description';
+
+export default function WaitlistPage() {
+    const [email, setEmail] = useState('');
+    const [submitted, setSubmitted] = useState(false);
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+
+        try {
+            await addDoc(collection(db, 'waitlistEmails'), {
+                email: email,
+                timestamp: new Date(),
+            });
+            setEmail('');
+            setSubmitted(true);
+        } catch (error) {
+            console.error('Error adding email to Firebase: ', error);
+        }
+    };
+
+    return (
+        <div className={styles.container}>
+            <Container maxWidth="md" className={styles.content}>
+                <Typography variant="h1" className={styles.title}>
+                    Welcome.
+                </Typography>
+                <Typography variant="h5" className={styles.subtitle}>
+                    Your ultimate assistant for academic research
+                </Typography>
+
+                <form onSubmit={handleSubmit} className={styles.form}>
+                    <TextField
+                        label="Enter your email"
+                        variant="outlined"
+                        fullWidth
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className={styles.input}
+                    />
+                    <Button type="submit" variant="contained" className={styles.button}>
+                        Join Waitlist
+                    </Button>
+                </form>
+
+                {submitted && (
+                    <Typography variant="h6" className={styles.thankYou}>
+                        Thank you for joining the waitlist!
+                    </Typography>
+                )}
+
+                <Typography variant="caption" className={styles.comingSoon}>
+                    Features still in development - Coming Soon
+                </Typography>
+
+                {/* Features Section */}
+                <Box className={styles.featuresSection}>
+                    <Typography variant="h4" className={styles.featuresTitle}>
+                        Upcoming Features
+                    </Typography>
+
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} md={4}>
+                            <Card className={styles.featureCard}>
+                                <CardContent>
+                                    <SearchIcon className={styles.featureIcon} />
+                                    <Typography variant="h6" className={styles.featureHeading}>
+                                        Web Parsing
+                                    </Typography>
+                                    <Typography variant="body2" className={styles.featureText}>
+                                        Automatically retrieve reliable and relevant data from the web, ensuring high-quality sources for your research.
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <Card className={styles.featureCard}>
+                                <CardContent>
+                                    <ChatIcon className={styles.featureIcon} />
+                                    <Typography variant="h6" className={styles.featureHeading}>
+                                        Chatbot Assistant
+                                    </Typography>
+                                    <Typography variant="body2" className={styles.featureText}>
+                                        Get real-time assistance from an AI-powered chatbot that helps you with research and writing tasks within a text editor.
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                        <Grid item xs={12} md={4}>
+                            <Card className={styles.featureCard}>
+                                <CardContent>
+                                    <DescriptionIcon className={styles.featureIcon} />
+                                    <Typography variant="h6" className={styles.featureHeading}>
+                                        Research Paper Generation
+                                    </Typography>
+                                    <Typography variant="body2" className={styles.featureText}>
+                                        Use AI to help generate research papers, formatted and ready for submission, based on your inputs and data collected.
+                                    </Typography>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    </Grid>
+                </Box>
+            </Container>
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  );
+    );
 }
